@@ -14,7 +14,10 @@ import {
   Sparkles,
   Copy,
   Check,
-  Star
+  Star,
+  Download,
+  Wand2,
+  RotateCcw
 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -202,9 +205,18 @@ function App() {
                   placeholder="What did you notice about your thinking?"
                 />
               </label>
-              <button className="primary" disabled={submitting}>
-                <Send size={18} />{submitting ? 'Mapping...' : 'Map My Reasoning'}
-              </button>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button className="primary" disabled={submitting}>
+                  <Send size={18} />{submitting ? 'Mapping...' : 'Map My Reasoning'}
+                </button>
+                <button 
+                  type="button" 
+                  className="secondary" 
+                  onClick={() => { setActiveResult(null); setForm({ learnerName: 'Guest learner', reasoning: '', promptText: '', reflection: '' }); }}
+                >
+                  <RotateCcw size={18} /> Start Over
+                </button>
+              </div>
             </form>
           </section>
 
@@ -250,6 +262,7 @@ function Result({ result }) {
   const [output, setOutput] = useState(null);
   const [isExecuting, setIsExecuting] = useState(false);
   const [executionError, setExecutionError] = useState(false);
+  const [showSimplified, setShowSimplified] = useState(false);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(result.generatedCode);
@@ -330,6 +343,17 @@ function Result({ result }) {
           </div>
         )}
         <p>{result.codeExplanation}</p>
+        <button 
+          className="simplify-btn" 
+          onClick={() => setShowSimplified(!showSimplified)}
+        >
+          <Wand2 size={16} /> {showSimplified ? "Hide simplified explanation" : "Explain it simpler"}
+        </button>
+        {showSimplified && (
+          <div className="simplified-explanation">
+            <strong>In simple terms:</strong> This Python code acts like a set of instructions to process your logic step-by-step. It uses <strong>variables</strong> to store the data you mentioned, and <strong>functions</strong> (like mini-machines) to perform the exact actions you outlined in your reasoning!
+          </div>
+        )}
       </div>
       <ul className="feedback">
         {result.promptFeedback.map((item) => <li key={item}>{item}</li>)}
@@ -346,16 +370,41 @@ function Result({ result }) {
 
 function Analytics({ analytics }) {
   const concepts = Object.entries(analytics?.conceptCounts || {});
+
+  const handleDownloadReport = () => {
+    const reportContent = `PyBe Progress Report\n===================\n\n` +
+      `Total Scenarios Completed: ${analytics?.scenarioCount || 0}\n` +
+      `Total Sessions: ${analytics?.sessionCount || 0}\n` +
+      `Average Prompt Score: ${analytics?.averagePromptScore || 0}\n\n` +
+      `Concept Mastery:\n` +
+      concepts.map(([name, count]) => `- ${name}: ${count}/10`).join('\n');
+      
+    const blob = new Blob([reportContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pybe-progress-report.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="analytics-list">
-      {concepts.length ? concepts.map(([name, count]) => (
-        <div key={name}>
-          <span>{name}</span>
-          <meter min="0" max="10" value={count}></meter>
-          <strong>{count}</strong>
-        </div>
-      )) : <p>No learning sessions yet.</p>}
-    </div>
+    <>
+      <div style={{ marginBottom: '16px' }}>
+        <button className="secondary sm" onClick={handleDownloadReport}>
+          <Download size={14} /> Download Report
+        </button>
+      </div>
+      <div className="analytics-list">
+        {concepts.length ? concepts.map(([name, count]) => (
+          <div key={name}>
+            <span>{name}</span>
+            <meter min="0" max="10" value={count}></meter>
+            <strong>{count}</strong>
+          </div>
+        )) : <p>No learning sessions yet.</p>}
+      </div>
+    </>
   );
 }
 

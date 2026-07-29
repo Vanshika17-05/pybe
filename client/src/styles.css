@@ -302,6 +302,30 @@ textarea {
   cursor: wait;
 }
 
+.secondary {
+  border: 1px solid #d4cdc0;
+  border-radius: 8px;
+  background: transparent;
+  color: #17231f;
+  padding: 13px 16px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 800;
+  transition: all 0.2s;
+}
+
+.secondary:hover {
+  background: #e7e2d6;
+}
+
+.secondary.sm {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
 .empty {
   min-height: 360px;
   display: grid;
@@ -396,6 +420,36 @@ pre {
 .code-block p {
   padding: 0 16px 16px;
   color: #cddbd5;
+}
+
+.simplify-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #aebdb5;
+  padding: 8px 14px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 16px 16px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.simplify-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.simplified-explanation {
+  margin: 0 16px 16px;
+  padding: 16px;
+  background: #1c2b26;
+  border-left: 3px solid #d8f07c;
+  color: #e6f2eb;
+  border-radius: 4px;
+  line-height: 1.6;
 }
 
 .feedback {
