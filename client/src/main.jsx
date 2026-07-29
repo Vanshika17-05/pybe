@@ -13,8 +13,11 @@ import {
   Send,
   Sparkles,
   Copy,
-  Check
+  Check,
+  Star
 } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import './styles.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -39,6 +42,16 @@ function App() {
   const [activeResult, setActiveResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('pybe-favorites') || '[]'));
+
+  useEffect(() => {
+    localStorage.setItem('pybe-favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (e, id) => {
+    e.stopPropagation();
+    setFavorites(prev => prev.includes(id) ? prev.filter(fId => fId !== id) : [...prev, id]);
+  };
 
   const concepts = useMemo(() => [...new Set(scenarios.flatMap((scenario) => scenario.concepts || []))].sort(), [scenarios]);
 
@@ -123,7 +136,16 @@ function App() {
                 setActiveResult(null);
               }}
             >
-              <span>{scenario.difficulty}</span>
+              <div className="scenario-header">
+                <span>{scenario.difficulty}</span>
+                <div 
+                  className="favorite-btn" 
+                  onClick={(e) => toggleFavorite(e, scenario._id)}
+                  title={favorites.includes(scenario._id) ? "Remove from favorites" : "Add to favorites"}
+                >
+                  <Star size={16} fill={favorites.includes(scenario._id) ? "currentColor" : "none"} />
+                </div>
+              </div>
               <strong>{scenario.title}</strong>
               <small>{scenario.concepts.join(' / ')}</small>
             </button>
@@ -251,7 +273,13 @@ function Result({ result }) {
             {copied ? <Check size={16} /> : <Copy size={16} />}
           </button>
         </div>
-        <pre>{result.generatedCode}</pre>
+        <SyntaxHighlighter 
+          language="python" 
+          style={vscDarkPlus}
+          customStyle={{ margin: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0, padding: '16px', background: 'transparent' }}
+        >
+          {result.generatedCode}
+        </SyntaxHighlighter>
         <p>{result.codeExplanation}</p>
       </div>
       <ul className="feedback">

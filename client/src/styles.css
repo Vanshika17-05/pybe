@@ -112,10 +112,37 @@ select {
   border-color: #d8f07c;
 }
 
+.scenario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .scenario span {
   font-size: .72rem;
   text-transform: uppercase;
   letter-spacing: .08em;
+}
+
+.favorite-btn {
+  color: #8b9d94;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  padding: 2px;
+}
+
+.favorite-btn:hover {
+  color: #d8f07c;
+}
+
+.scenario.active .favorite-btn {
+  color: #66730a;
+}
+
+.scenario.active .favorite-btn:hover {
+  color: #14201c;
 }
 
 .scenario small {
