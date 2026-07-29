@@ -11,7 +11,9 @@ import {
   Route,
   Search,
   Send,
-  Sparkles
+  Sparkles,
+  Copy,
+  Check
 } from 'lucide-react';
 import './styles.css';
 
@@ -222,6 +224,14 @@ function EmptyResult() {
 }
 
 function Result({ result }) {
+  const [copied, setCopied] = useState(false);
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(result.generatedCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="result-stack">
       <div className="score"><span>{result.promptScore}</span><small>Prompt maturity</small></div>
@@ -235,7 +245,12 @@ function Result({ result }) {
         ))}
       </div>
       <div className="code-block">
-        <div><Code2 size={18} /> Generated Python</div>
+        <div className="code-header">
+          <div className="code-title"><Code2 size={18} /> Generated Python</div>
+          <button onClick={handleCopy} className="copy-button" title={copied ? "Copied!" : "Copy code"}>
+            {copied ? <Check size={16} /> : <Copy size={16} />}
+          </button>
+        </div>
         <pre>{result.generatedCode}</pre>
         <p>{result.codeExplanation}</p>
       </div>

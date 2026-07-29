@@ -327,12 +327,36 @@ textarea {
   overflow: hidden;
 }
 
-.code-block div {
+.code-header {
   padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2d28;
+}
+
+.code-title {
   display: flex;
   gap: 8px;
   align-items: center;
-  background: #1f2d28;
+}
+
+.copy-button {
+  background: transparent;
+  border: none;
+  color: #8b9d94;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
 pre {
