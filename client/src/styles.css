@@ -497,6 +497,40 @@ meter {
   font-size: 1.5rem;
 }
 
+.pulse-anim {
+  animation: pulse 1s infinite;
+  color: #d8f07c;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.terminal-output {
+  margin: 0;
+  padding: 16px;
+  background: #0a0f0d;
+  border-top: 1px solid #1f2d28;
+  color: #d9e2dc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.terminal-output.error {
+  color: #ff8e8e;
+  background: #1a0f0f;
+}
+
+.empty-output {
+  color: #5c6b65;
+  font-style: italic;
+}
+
 @media (max-width: 1050px) {
   .app-shell {
     grid-template-columns: 1fr;

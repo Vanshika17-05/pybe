@@ -247,11 +247,50 @@ function EmptyResult() {
 
 function Result({ result }) {
   const [copied, setCopied] = useState(false);
+  const [output, setOutput] = useState(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [executionError, setExecutionError] = useState(false);
   
   const handleCopy = () => {
     navigator.clipboard.writeText(result.generatedCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRunCode = async () => {
+    setIsExecuting(true);
+    setOutput(null);
+    setExecutionError(false);
+    
+    try {
+      const response = await fetch('https://emacs.piston.rs/api/v2/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: 'python',
+          version: '3.10.0',
+          files: [{ content: result.generatedCode }]
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.compile && data.compile.code !== 0) {
+        setOutput(data.compile.output);
+        setExecutionError(true);
+      } else if (data.run) {
+        setOutput(data.run.output);
+        setExecutionError(data.run.code !== 0);
+      } else {
+        setOutput(data.message || 'Unknown error occurred.');
+        setExecutionError(true);
+      }
+    } catch (err) {
+      setOutput('Failed to connect to execution engine.');
+      setExecutionError(true);
+    } finally {
+      setIsExecuting(false);
+    }
   };
 
   return (
@@ -269,9 +308,14 @@ function Result({ result }) {
       <div className="code-block">
         <div className="code-header">
           <div className="code-title"><Code2 size={18} /> Generated Python</div>
-          <button onClick={handleCopy} className="copy-button" title={copied ? "Copied!" : "Copy code"}>
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button onClick={handleRunCode} className="copy-button" title="Run code" disabled={isExecuting}>
+              <Play size={16} className={isExecuting ? "pulse-anim" : ""} />
+            </button>
+            <button onClick={handleCopy} className="copy-button" title={copied ? "Copied!" : "Copy code"}>
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+            </button>
+          </div>
         </div>
         <SyntaxHighlighter 
           language="python" 
@@ -280,6 +324,11 @@ function Result({ result }) {
         >
           {result.generatedCode}
         </SyntaxHighlighter>
+        {output !== null && (
+          <div className={`terminal-output ${executionError ? 'error' : ''}`}>
+            {output || <span className="empty-output">Program finished with no output</span>}
+          </div>
+        )}
         <p>{result.codeExplanation}</p>
       </div>
       <ul className="feedback">
